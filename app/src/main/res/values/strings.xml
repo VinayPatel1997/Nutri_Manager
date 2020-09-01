@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Nutri_Manager</string>
+    <string name="add_food">Add food</string>
 </resources>

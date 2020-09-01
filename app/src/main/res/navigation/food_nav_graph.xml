@@ -1,15 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/news_nav_graph"
-    app:startDestination="@id/searchFoodFragment">
+    app:startDestination="@id/homeFragment">
 
 
     <fragment
-        android:id="@+id/searchFoodFragment"
-        android:name="com.example.nutri_manager.ui.fragments.SearchFoodFragment"
-        android:label="SearchFoodFragment" />
+        android:id="@+id/homeFragment"
+        android:name="com.example.nutri_manager.ui.fragments.HomeFragment"
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_searchFoodFragment2"
+            app:destination="@id/searchFoodFragment2"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/visualizationFragment"
+        android:name="com.example.nutri_manager.ui.fragments.VisualizationFragment"
+        android:label="VisualizationFragment" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.nutri_manager.ui.fragments.MapFragment"
+        android:label="MapFragment" />
     <fragment
         android:id="@+id/foodViewFragment"
         android:name="com.example.nutri_manager.ui.fragments.FoodViewFragment"
         android:label="FoodViewFragment" />
+    <fragment
+        android:id="@+id/searchFoodFragment2"
+        android:name="com.example.nutri_manager.ui.fragments.SearchFoodFragment"
+        android:label="SearchFoodFragment" >
+        <action
+            android:id="@+id/action_searchFoodFragment2_to_foodViewFragment"
+            app:destination="@id/foodViewFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
 </navigation>
