@@ -9,7 +9,7 @@ class FoodRepository(
 ) {
 
     suspend fun searchNews(searchQuery: String, pageNumber: Int) =
-        RetrofitInstance.api.getFoodNutrition(searchQuery, pageNumber)
+        RetrofitInstance.api.getFood(searchQuery, pageNumber)
 
 //    suspend fun upsert(article: Food) = db.getFoodDao().upsert(article)
 

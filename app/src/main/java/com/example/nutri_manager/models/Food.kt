@@ -1,5 +1,7 @@
 package com.example.nutri_manager.models
 
+import java.io.Serializable
+
 data class Food(
     val allHighlightFields: String,
     val brandOwner: String,
@@ -11,4 +13,4 @@ data class Food(
     val ingredients: String,
     val publishedDate: String,
     val score: Double
-)
+) : Serializable

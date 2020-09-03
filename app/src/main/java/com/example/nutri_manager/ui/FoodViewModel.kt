@@ -38,7 +38,9 @@ class FoodViewModel(
                 if(searchFoodsResponse == null) {
                     searchFoodsResponse = resultResponse
                 } else {
-                    val foods = searchFoodsResponse?.foods
+                    val oldFoods = searchFoodsResponse?.foods
+                    val newFoods = resultResponse.foods
+                    oldFoods?.addAll(newFoods)
                 }
                 return Resource.Success(searchFoodsResponse?:resultResponse)
             }
