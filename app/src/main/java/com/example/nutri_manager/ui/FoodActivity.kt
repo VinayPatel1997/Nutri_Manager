@@ -7,8 +7,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.nutri_manager.R
 import com.example.nutri_manager.repository.FoodRepository
-import com.example.nutrimanager.ui.FoodViewModel
-import com.example.nutrimanager.ui.FoodViewModelProviderFactory
 import kotlinx.android.synthetic.main.activity_food.*
 
 class FoodActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.example.nutrimanager.ui
+package com.example.nutri_manager.ui
 
 import android.app.Application
 import android.content.Context

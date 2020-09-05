@@ -8,7 +8,7 @@ data class Food(
     val dataType: String,
     val description: String,
     val fdcId: Int,
-    val foodNutrients: List<FoodNutrient>,
+    val foodNutrients: MutableList<FoodNutrient>,
     val gtinUpc: String,
     val ingredients: String,
     val publishedDate: String,

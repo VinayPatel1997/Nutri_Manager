@@ -27,7 +27,11 @@
     <fragment
         android:id="@+id/foodViewFragment"
         android:name="com.example.nutri_manager.ui.fragments.FoodViewFragment"
-        android:label="FoodViewFragment" />
+        android:label="FoodViewFragment" >
+        <argument
+            android:name="food"
+            app:argType="com.example.nutri_manager.models.Food" />
+    </fragment>
     <fragment
         android:id="@+id/searchFoodFragment2"
         android:name="com.example.nutri_manager.ui.fragments.SearchFoodFragment"

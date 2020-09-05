@@ -16,7 +16,7 @@ import com.example.nutri_manager.ui.FoodActivity
 import com.example.nutri_manager.util.Constants
 import com.example.nutri_manager.util.Constants.Companion.SEARCH_FOOD_TIME_DELAY
 import com.example.nutri_manager.util.Resource
-import com.example.nutrimanager.ui.FoodViewModel
+import com.example.nutri_manager.ui.FoodViewModel
 import kotlinx.android.synthetic.main.fragment_search_food.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
