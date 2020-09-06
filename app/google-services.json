@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "319287194685",
+    "firebase_url": "https://nutri-manager.firebaseio.com",
+    "project_id": "nutri-manager",
+    "storage_bucket": "nutri-manager.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319287194685:android:0cf460f50fc8822961e654",
+        "android_client_info": {
+          "package_name": "com.example.nutri_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "319287194685-k3gj0ukbbafa3i93vpn0i89srpd2filk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdFRJHr8BTbtzxsGzY9bN0EpmNbzmpbSc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "319287194685-k3gj0ukbbafa3i93vpn0i89srpd2filk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
