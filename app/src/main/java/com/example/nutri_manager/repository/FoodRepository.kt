@@ -4,11 +4,18 @@ import com.example.nutri_manager.api.RetrofitInstance
 
 
 class FoodRepository(
-//    val db : FoodDatabase
+//    val db : FoodDatabase-
 ) {
 
     suspend fun searchNews(searchQuery: String, pageNumber: Int) =
         RetrofitInstance.api.getFood(searchQuery, pageNumber)
+
+
+
+    //Firebase
+    suspend fun insertFoodConsumptionToFirebase() {
+
+    }
 
 //    suspend fun upsert(article: Food) = db.getFoodDao().upsert(article)
 

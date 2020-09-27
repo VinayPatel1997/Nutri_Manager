@@ -1,9 +1,8 @@
 package com.example.nutri_manager.models
 
-import java.util.*
+import java.time.LocalDateTime
 
 data class FoodConsumption(
-    val fdcId: Int,
-    val foodAmount : Int,
-    val date: Date
+    val date: LocalDateTime? = null,
+    val foodNutrientList: Food? = null
 )

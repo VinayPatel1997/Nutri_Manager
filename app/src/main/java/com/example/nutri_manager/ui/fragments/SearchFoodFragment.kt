@@ -63,7 +63,7 @@ class SearchFoodFragment : Fragment(R.layout.fragment_search_food) {
                 is Resource.Success -> {
                     hideProgressBar()
                     response.data?.let { foodsResponse ->
-                        Toast.makeText(context, "Successfull responce aavi gyo", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Successfull responce aavi gyo", Toast.LENGTH_SHORT).show()
                         foodAdapter.differ.submitList(foodsResponse.foods.toList())
                         val totalPages = foodsResponse.totalHits / Constants.QUERY_PAGE_SIZE + 2
                         isLastPage = foodViewModel.searchFoodsPage == totalPages

@@ -10,6 +10,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
             try {
                 auth.signInWithCredential(credentials).await()
                 withContext(Dispatchers.Main){
+                    auth.uid?.let { FirebaseFirestore.getInstance().collection(it) }
                     Toast.makeText(this@LoginActivity, "Login Successfully",Toast.LENGTH_SHORT).show()
                     Intent(this@LoginActivity,FoodActivity::class.java).also {
                         startActivity(it)
