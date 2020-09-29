@@ -5,10 +5,12 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.nutri_manager.FoodsApplication
+import com.example.nutri_manager.map_models.MapResponse
 import com.example.nutri_manager.models.FoodResponse
 import com.example.nutri_manager.repository.FoodRepository
 import com.example.nutri_manager.util.Resource
@@ -23,10 +25,12 @@ class FoodViewModel(
 ) : AndroidViewModel(app) {
 
     val searchFoods: MutableLiveData<Resource<FoodResponse>> = MutableLiveData()
+    val getNearbyPlaces: MutableLiveData<Resource<MapResponse>> = MutableLiveData()
     var searchFoodsPage = 1
     var searchFoodsResponse: FoodResponse? = null
+    var getMapResponse: MapResponse? = null
 
-    /// API Calls
+    /// API Calls for Food
 
     fun searchFoods(searchQuery: String) = viewModelScope.launch {
         safeSearchFoodsCall(searchQuery)
@@ -36,7 +40,7 @@ class FoodViewModel(
         searchFoods.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = foodRepository.searchNews(searchQuery, searchFoodsPage)
+                val response = foodRepository.searchFoods(searchQuery, searchFoodsPage)
                 searchFoods.postValue(handleSearchFoodsResponse(response))
             } else {
                 searchFoods.postValue(Resource.Error("No internet connection"))
@@ -65,6 +69,52 @@ class FoodViewModel(
         }
         return Resource.Error(response.message())
     }
+
+
+
+    // API Calls for Map
+
+    fun getNearbyPlaces(url: String) = viewModelScope.launch {
+        safeGetNearbyPlacesCall(url)
+    }
+
+    private suspend fun safeGetNearbyPlacesCall(url: String) {
+
+        getNearbyPlaces.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()) {
+                val response = foodRepository.getNearbyPlaces(url)
+                getNearbyPlaces.postValue(handleNearByPlaceResponse(response))
+            } else {
+                getNearbyPlaces.postValue(Resource.Error("No internet connection"))
+            }
+        } catch (t: Throwable) {
+            when (t) {
+                is IOException -> getNearbyPlaces.postValue(Resource.Error("Network Failure"))
+                else -> getNearbyPlaces.postValue(Resource.Error("Conversion Error"))
+            }
+        }
+    }
+
+    private fun handleNearByPlaceResponse(response: Response<MapResponse>): Resource<MapResponse> {
+        if (response.isSuccessful) {
+            response.body()?.let { resultResponse ->
+                return Resource.Success(getMapResponse ?: resultResponse)
+//                getMapResponse = resultResponse
+//                searchFoodsPage++
+//                if (getMapResponse == null) {
+//                    getMapResponse = getMapResponse
+//                } else {
+////                    val oldFoods = searchFoodsResponse?.foods
+////                    val newFoods = resultResponse.foods
+////                    oldFoods?.addAll(newFoods)
+//                }
+//                Toast.makeText(getApplication(), "Success", )
+            }
+        }
+        return Resource.Error(response.message())
+    }
+
 
 
     private fun hasInternetConnection(): Boolean {

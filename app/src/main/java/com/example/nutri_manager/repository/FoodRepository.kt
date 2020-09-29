@@ -7,9 +7,11 @@ class FoodRepository(
 //    val db : FoodDatabase-
 ) {
 
-    suspend fun searchNews(searchQuery: String, pageNumber: Int) =
+    suspend fun searchFoods(searchQuery: String, pageNumber: Int) =
         RetrofitInstance.api.getFood(searchQuery, pageNumber)
 
+    suspend fun getNearbyPlaces(url: String) =
+        RetrofitInstance.mapAPI.getPlaces(url)
 
 
     //Firebase
