@@ -12,4 +12,15 @@
     <string name="login_failed">"Login failed"</string>
     <string name="web_client_id">319287194685-k3gj0ukbbafa3i93vpn0i89srpd2filk.apps.googleusercontent.com</string>
     <string name="current_id"></string>
+
+    <string-array name="duration">
+        <item>Last 7 Days</item>
+        <item>Last 30 Days</item>
+        <item>Last 6 Months</item>
+        <item>Last 12 Months</item>
+    </string-array>
+    <string-array name="type">
+        <item>List View</item>
+        <item>Visualization</item>
+    </string-array>
 </resources>

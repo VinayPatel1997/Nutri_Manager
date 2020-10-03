@@ -41,7 +41,7 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
         viewModel = (activity as FoodActivity).viewModel
         setupRecyclerView()
         food = args.food
-        nutrientList = food.foodNutrients
+        nutrientList = food.foodNutrients!!
         nutrientAdapter.differ.submitList(nutrientList.toList())
 
 
@@ -58,8 +58,10 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
                                 async {
                                     for (index in 0 until nutrientList.size) {
                                         nutrientList[index].value =
-                                            (nutrientList[index].value * editable.toString()
-                                                .toInt()) / 100
+                                            (nutrientList[index].value?.times(
+                                                editable.toString()
+                                                    .toInt()
+                                            ))?.div(100)
                                     }
                                 }.await()
                                 delay(2000)
@@ -81,8 +83,16 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
 //                val foodId = args.food.fdcId
 //                val foodAmount = etAmount.text.toString().toInt()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-                val curruntDateTime = LocalDateTime.now()
-                val formatted = formatter.format(curruntDateTime)
+
+//                val systemDateTime = System.currentTimeMillis()
+//                val currentDateTime = java.util.Date(System.currentTimeMillis())
+
+                val localDateTime = LocalDateTime.now()
+//                val formatted = formatter.format(curruntDateTime)
+
+//                val currentDateTime = Timestamp.now()
+
+
                 val updatedFoodObject = Food(
                     food.allHighlightFields,
                     food.brandOwner,
@@ -93,19 +103,25 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
                     food.gtinUpc,
                     food.ingredients,
                     food.publishedDate,
-                    food.score
+                    food.score,
                 )
-                uploadFoodConsumption(FoodConsumption(curruntDateTime, updatedFoodObject), formatted)
+
+                val currentDateTime: HashMap<String, LocalDateTime>  = HashMap()
+                currentDateTime.put("date",localDateTime)
+                uploadFoodConsumption(FoodConsumption(currentDateTime, updatedFoodObject), localDateTime.toString())
+
             }
         }
     }
 
 
-    private fun uploadFoodConsumption(foodConsumption: FoodConsumption, date: String) =
+
+
+    private fun uploadFoodConsumption(foodConsumption: FoodConsumption, docPath: String) =
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 FirebaseAuth.getInstance().uid?.let {
-                    FirebaseFirestore.getInstance().collection(it).document(date)
+                    FirebaseFirestore.getInstance().collection(it).document(docPath)
                         .set(foodConsumption)
                 }?.await()
                 withContext(Dispatchers.Main) {

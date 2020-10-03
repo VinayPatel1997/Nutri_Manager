@@ -60,7 +60,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
         fabMap.setOnClickListener {
             requestPermissions()
-            if (MapUtility.hasLocationPermission(requireContext())){
+            if (MapUtility.hasLocationPermission(requireContext())) {
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
                     currentLat = location?.latitude
                     currentLng = location?.longitude
@@ -75,7 +75,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
                             foodViewModel.getNearbyPlaces(getUrl(currentLat, currentLng))
                             foodViewModel.getNearbyPlaces.observe(
                                 viewLifecycleOwner,
-                                Observer { response ->
+                                { response ->
                                     when (response) {
                                         is Resource.Success -> {
                                             hideProgressBar()
@@ -99,10 +99,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
                                                 }
                                                 map!!.moveCamera(
                                                     CameraUpdateFactory.newLatLng(
-                                                        LatLng(
-                                                            currentLat!!,
-                                                            currentLng!!
-                                                        )
+                                                        LatLng(currentLat!!, currentLng!!)
                                                     )
                                                 )
                                                 map!!.animateCamera(CameraUpdateFactory.zoomTo(11f))
@@ -119,12 +116,6 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
                                             }
                                         }
                                         is Resource.Loading -> {
-                                            Toast.makeText(
-                                                requireContext(),
-                                                "Loading",
-                                                Toast.LENGTH_SHORT
-                                            )
-                                                .show()
                                             showProgressBar()
                                         }
                                     }
@@ -190,6 +181,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         paginationProgressBarMap.visibility = View.VISIBLE
         isLoading = true
     }
+
     var isLoading = false
 
     private fun requestPermissions() {

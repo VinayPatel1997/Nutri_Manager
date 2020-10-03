@@ -11,10 +11,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.nutri_manager.FoodsApplication
 import com.example.nutri_manager.map_models.MapResponse
+import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.models.FoodResponse
 import com.example.nutri_manager.repository.FoodRepository
 import com.example.nutri_manager.util.Resource
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import okio.IOException
 import retrofit2.Response
 
@@ -26,11 +32,39 @@ class FoodViewModel(
 
     val searchFoods: MutableLiveData<Resource<FoodResponse>> = MutableLiveData()
     val getNearbyPlaces: MutableLiveData<Resource<MapResponse>> = MutableLiveData()
+    val foodConsumption: MutableLiveData<Resource<QuerySnapshot>> = MutableLiveData()
     var searchFoodsPage = 1
     var searchFoodsResponse: FoodResponse? = null
     var getMapResponse: MapResponse? = null
 
-    /// API Calls for Food
+
+
+    // Retrieving food from firebase
+
+    fun getFoodConsumption() = viewModelScope.launch {
+        safeGetFoodConsumptionCall()
+
+    }
+    private suspend fun safeGetFoodConsumptionCall(){
+        foodConsumption.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()){
+                val response = foodRepository.getFoodConsumption().await()
+                foodConsumption.postValue(Resource.Success(response))
+            } else {
+                foodConsumption.postValue(Resource.Error("No internet connection"))
+            }
+
+        } catch (t: Throwable) {
+            when(t) {
+                is IOException -> foodConsumption.postValue(Resource.Error("Network Failure"))
+                else -> foodConsumption.postValue(Resource.Error("Conversion Error"))
+            }
+        }
+    }
+
+
+    // Getting food from FoodData Central API
 
     fun searchFoods(searchQuery: String) = viewModelScope.launch {
         safeSearchFoodsCall(searchQuery)
@@ -69,7 +103,6 @@ class FoodViewModel(
         }
         return Resource.Error(response.message())
     }
-
 
 
     // API Calls for Map
@@ -114,7 +147,6 @@ class FoodViewModel(
         }
         return Resource.Error(response.message())
     }
-
 
 
     private fun hasInternetConnection(): Boolean {
