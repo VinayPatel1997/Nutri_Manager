@@ -1,37 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <Spinner
+        android:id="@+id/spDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/duration"
+        android:padding="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/type"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/spDuration"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/lineChart"
+        app:layout_constraintTop_toBottomOf="@id/spType"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        />
+    <ProgressBar
+        android:id="@+id/progress_bar_visualization"
+        style="?attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <Spinner
-            android:id="@+id/spDuration"
-            android:entries="@array/duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <Spinner
-            android:id="@+id/spType"
-            android:entries="@array/type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:id="@+id/frameLayout"
-        android:background="@color/colorPrimaryDark"
-        android:layout_height="match_parent">
-        <com.anychart.AnyChartView
-            android:id="@+id/any_chart_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-</LinearLayout>
+
+    <!--    <?xml version="1.0" encoding="utf-8"?>-->
+    <!--<LinearLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+    <!--<LinearLayout-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:orientation="horizontal">-->
+
+    <!--    <Spinner-->
+    <!--        android:id="@+id/spDuration"-->
+    <!--        android:entries="@array/duration"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"/>-->
+    <!--    <Spinner-->
+    <!--        android:id="@+id/spType"-->
+    <!--        android:entries="@array/type"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"/>-->
+    <!--</LinearLayout>-->
+    <!--<FrameLayout-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:id="@+id/frameLayout"-->
+    <!--    android:layout_height="wrap_content">-->
+    <!--    <lecho.lib.hellocharts.view.LineChartView-->
+    <!--        android:id="@+id/lineChart"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"/>-->
+
+    <!--    &lt;!&ndash;        <com.github.mikephil.charting.charts.BarChart&ndash;&gt;-->
+    <!--    &lt;!&ndash;            android:id="@+id/barChartView"&ndash;&gt;-->
+    <!--    &lt;!&ndash;            android:layout_width="match_parent"&ndash;&gt;-->
+    <!--    &lt;!&ndash;            android:layout_height="match_parent"/>&ndash;&gt;-->
+    <!--    &lt;!&ndash;        <com.anychart.AnyChartView&ndash;&gt;-->
+    <!--    &lt;!&ndash;            android:id="@+id/any_chart_view"&ndash;&gt;-->
+    <!--    &lt;!&ndash;            android:layout_width="match_parent"&ndash;&gt;-->
+    <!--    &lt;!&ndash;            android:layout_height="match_parent"&ndash;&gt;-->
+    <!--    &lt;!&ndash;            />&ndash;&gt;-->
+    <!--</FrameLayout>-->
+
+    <!--</LinearLayout>-->
