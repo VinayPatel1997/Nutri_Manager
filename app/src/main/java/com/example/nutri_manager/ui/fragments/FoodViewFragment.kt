@@ -17,12 +17,12 @@ import com.example.nutri_manager.models.FoodNutrient
 import com.example.nutri_manager.ui.FoodActivity
 import com.example.nutri_manager.ui.FoodViewModel
 import com.example.nutri_manager.util.Constants
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_food_view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
@@ -87,11 +87,10 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
 //                val systemDateTime = System.currentTimeMillis()
 //                val currentDateTime = java.util.Date(System.currentTimeMillis())
 
-                val localDateTime = LocalDateTime.now()
+//                val localDateTime = LocalDateTime.now()
 //                val formatted = formatter.format(curruntDateTime)
 
-//                val currentDateTime = Timestamp.now()
-
+                val timestamp = Timestamp.now()
 
                 val updatedFoodObject = Food(
                     food.allHighlightFields,
@@ -106,9 +105,9 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
                     food.score,
                 )
 
-                val currentDateTime: HashMap<String, LocalDateTime>  = HashMap()
-                currentDateTime.put("date",localDateTime)
-                uploadFoodConsumption(FoodConsumption(currentDateTime, updatedFoodObject), localDateTime.toString())
+                val currentDateTime: HashMap<String, Timestamp>  = HashMap()
+                currentDateTime.put("date",timestamp)
+                uploadFoodConsumption(FoodConsumption(currentDateTime, updatedFoodObject), timestamp.toString())
 
             }
         }

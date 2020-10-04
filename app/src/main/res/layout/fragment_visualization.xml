@@ -24,6 +24,7 @@
     </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"
+        android:id="@+id/frameLayout"
         android:background="@color/colorPrimaryDark"
         android:layout_height="match_parent">
         <com.anychart.AnyChartView
