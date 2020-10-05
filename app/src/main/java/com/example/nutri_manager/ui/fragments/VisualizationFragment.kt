@@ -60,10 +60,6 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
 
     var durationPosition: Int = -1
     var typePosition: Int = -1
-
-    var unit: String? = null
-    var type: String? = "etc"
-
     var querySnapshot: QuerySnapshot? = null
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -72,13 +68,14 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
         viewModel = (activity as FoodActivity).viewModel
 
         CoroutineScope(Dispatchers.IO).launch {
+            showProgressBar()
             viewModel.getFoodConsumption().join()
-            initializingChartData(querySnapshot,1008)
+            hideProgressBar()
         }
 
         val xAxisValue: ArrayList<AxisValue> = ArrayList()
         val yAxisValue: ArrayList<PointValue> = ArrayList()
-        createChart(xAxisValue, yAxisValue,"Nutrient (unit)")
+        createChart(xAxisValue, yAxisValue, "Nutrient (unit)", 100.0)
 
         spDuration.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -89,8 +86,11 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
                     id: Long
                 ) {
                     durationPosition = position
-                    if (querySnapshot != null){
-                        initializingChartData(querySnapshot,1008)
+                    if (querySnapshot != null && typePosition != -1) {
+                        val nutrientId = getNutrintId()
+                        val unit = getNutrientUnit(nutrientId)
+                        val lebel = "${adapterView?.getItemAtPosition(typePosition)}($unit)"
+                        initializingChartData(querySnapshot, nutrientId, lebel)
                     }
                 }
 
@@ -105,8 +105,13 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
                     position: Int,
                     id: Long
                 ) {
-                    typePosition = position
-                    initializingChartData(querySnapshot,1008)
+                    if (querySnapshot != null && durationPosition != -1){
+                        typePosition = position
+                        val nutrientId = getNutrintId()
+                        val unit = getNutrientUnit(nutrientId)
+                        val lebel = "${adapterView?.getItemAtPosition(typePosition)}($unit)"
+                        initializingChartData(querySnapshot, nutrientId, lebel )
+                    }
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
@@ -138,18 +143,18 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
     private fun createChart(
         xAxisValueArgs: ArrayList<AxisValue>,
         yAxisValueArgs: ArrayList<PointValue>,
-        title: String
+        title: String,
+        maxValue: Double
     ) {
         val xAxisValue: ArrayList<AxisValue> = xAxisValueArgs
         val yAxisValue: ArrayList<PointValue> = yAxisValueArgs
         val line: Line = Line(yAxisValue).setColor(Color.parseColor("#9C27B0"))
         val lines: ArrayList<Line> = ArrayList()
         lines.add(line)
-        val data: LineChartData = LineChartData()
+        val data = LineChartData()
         data.setLines(lines)
-        lineChart.lineChartData = data
 
-        val axis: Axis = Axis()
+        val axis = Axis()
         axis.setValues(xAxisValue)
         axis.setTextSize(16)
         axis.setTextColor(Color.parseColor("#03A9F4"))
@@ -157,51 +162,62 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
         axis.setName("Time")
 
 
-        val yAxis: Axis = Axis()
+        val yAxis = Axis()
         yAxis.setTextSize(16)
         yAxis.setTextColor(Color.parseColor("#03A9F4"))
         yAxis.setName(title)
         data.axisYLeft = yAxis
+        lineChart.lineChartData = data
+        val viewport = Viewport(lineChart.maximumViewport)
+        viewport.bottom = 0F
+        viewport.left = 0F
+        viewport.top = ((maxValue*110)/100).toFloat()
+        lineChart.maximumViewport = viewport
+        lineChart.currentViewport = viewport
     }
 
 
     @RequiresApi(Build.VERSION_CODES.P)
-    private fun initializingChartData(responses: QuerySnapshot?, nutrientId: Int) {
+    private fun initializingChartData(responses: QuerySnapshot?, nutrientId: Int, lebel: String) {
 
         try {
-        val startingDate = getStartingDate()
-        var XAxisDate: String
-        var YAxisValue: Double
-        val xAxisValue: ArrayList<AxisValue> = ArrayList()
-        val yAxisValue: ArrayList<PointValue> = ArrayList()
+            val startingDate = getStartingDate()
+            var XAxisDate: String
+            var YAxisValue: Double
+            val xAxisValue: ArrayList<AxisValue> = ArrayList()
+            val yAxisValue: ArrayList<PointValue> = ArrayList()
+            var maxValue = 0.0
 
-        for (index in 0..getDayRange()) {
-            startingDate.add(Calendar.DATE, 1)
-            XAxisDate =
-                "${startingDate.get(Calendar.DATE)}/${(startingDate.get(Calendar.MONTH)) + 1}"
-            YAxisValue = 0.0
-            for (response in responses!!.documents) {
-                val foodConsumptionInstance = response.toObject<FoodConsumption>()
-                val foodConsumptionDate =
-                    foodConsumptionInstance!!.date!!.get("date")!!.toDate()
+            for (index in 0..getDayRange()) {
+                startingDate.add(Calendar.DATE, 1)
+                XAxisDate =
+                    "${startingDate.get(Calendar.DATE)}/${(startingDate.get(Calendar.MONTH)) + 1}"
+                YAxisValue = 0.0
+                for (response in responses!!.documents) {
+                    val foodConsumptionInstance = response.toObject<FoodConsumption>()
+                    val foodConsumptionDate =
+                        foodConsumptionInstance!!.date!!.get("date")!!.toDate()
 
-                if (foodConsumptionDate.year == startingDate.time.year && foodConsumptionDate.month == startingDate.time.month
-                    && foodConsumptionDate.date == startingDate.time.date
-                ) {
-                    val nutrientList = foodConsumptionInstance.foodNutrientList?.foodNutrients
-                    if (nutrientList != null) {
-                        for (nutrient in nutrientList) {
-                            if (nutrient.nutrientId == nutrientId) {
-                                YAxisValue = YAxisValue + nutrient.value!!
+                    if (foodConsumptionDate.year == startingDate.time.year && foodConsumptionDate.month == startingDate.time.month
+                        && foodConsumptionDate.date == startingDate.time.date
+                    ) {
+                        val nutrientList = foodConsumptionInstance.foodNutrientList?.foodNutrients
+                        if (nutrientList != null) {
+                            for (nutrient in nutrientList) {
+                                if (nutrient.nutrientId == nutrientId) {
+                                    YAxisValue = YAxisValue + nutrient.value!!
+                                }
                             }
                         }
                     }
                 }
+                if (YAxisValue > maxValue) {
+                    maxValue = YAxisValue
+                }
+                xAxisValue.add(index, AxisValue(index.toFloat()).setLabel(XAxisDate))
+                yAxisValue.add(PointValue(index.toFloat(), YAxisValue.toFloat()))
             }
-            xAxisValue.add(index, AxisValue(index.toFloat()).setLabel(XAxisDate))
-            yAxisValue.add(PointValue(index.toFloat(), YAxisValue.toFloat()))
-        }
-        createChart(xAxisValue, yAxisValue,"Energy (kcal)" )
+            createChart(xAxisValue, yAxisValue, lebel, maxValue)
 
         } catch (e: Exception) {
             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
@@ -229,33 +245,41 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
 
     private fun getDayRange(): Int {
         if (durationPosition == 0) {
-            unit = "g"
-            type = "Energy"
             return 7
         } else if (durationPosition == 1) {
-            unit = "mg"
-            type = "Protein"
             return 30
         } else if (durationPosition == 2) {
-            unit = "kg"
-            type = "fat"
             return 180
         } else {
             return 365
         }
     }
 
-    private fun getNutrintId():Int {
-        if (typePosition == 0){
-            return 1008                 // energy
-        } else if (typePosition == 1){
-            return 1089                 // Iron
+    private fun getNutrintId(): Int {
+        if (typePosition == 0) {
+            return 1008                 // energy   kJ
+        } else if (typePosition == 1) {
+            return 1003                 // protein  G
         } else if (typePosition == 2) {
-            return 1104                 // vitamin A
+            return 1104                 // vitamin A    IU
         } else if (typePosition == 3) {
-            return 1003                 // protein
+            return 1089                 // Iron         MG
         } else {
-            return 1093                 // sodium
+            return 1093                 // sodium       MG
+        }
+    }
+
+    private fun getNutrientUnit(id: Int): String? {
+        if (id == 1008) {
+            return "kJ"
+        } else if (id == 1003) {
+            return "G"
+        } else if (id == 1104) {
+            return "IU"
+        } else if (id == 1089 || id == 1093) {
+            return "MG"
+        } else {
+            return "Unit"
         }
     }
 
