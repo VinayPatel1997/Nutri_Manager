@@ -29,4 +29,20 @@ object SpinnerHelper {
             return "Unit"
         }
     }
+
+    fun getNutrientName(id: Int): String{
+        if (id == 1008) {
+            return "Energy"
+        } else if (id == 1003) {
+            return "Protein"
+        } else if (id == 1104) {
+            return "Vitamin A"
+        } else if (id == 1089) {
+            return "Iron"
+        } else if (id == 1093){
+            return "Sodium"
+        } else {
+            return "Nutrient"
+        }
+    }
 }

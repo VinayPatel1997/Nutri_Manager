@@ -44,44 +44,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as FoodActivity).viewModel
 
-//        CoroutineScope(Dispatchers.IO).launch {
-//            showProgressBar()
-//            viewModel.getFoodConsumption().join()
-//            hideProgressBar()
-//        }
-//
-//        viewModel.foodConsumption.observe(viewLifecycleOwner, Observer { response ->
-//            when (response) {
-//                is Resource.Success -> {
-//                    val querySnapshot = response.data
-//                    if (querySnapshot != null) {
-//                        this.querySnapshot = querySnapshot
-//                        val currentDate = Calendar.getInstance()
-//                        setEnergyProgressBar()
-//                        setAvoidNutrientProgressBar()
-//                        setTakeNutrientProgressBar()
-//                        hideProgressBar()
-//                    } else {
-//                        setEnergyProgressBar()
-//                        setAvoidNutrientProgressBar()
-//                        setTakeNutrientProgressBar()
-//                        hideProgressBar()
-//                        Toast.makeText(context, "No record found!", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//                is Resource.Loading -> {
-//                    showProgressBar()
-//                }
-//                is Resource.Error -> {
-//                    hideProgressBar()
-//                    Toast.makeText(context, "Error ${response.message}", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//        })
+        viewModel.getFoodConsumption()
+        viewModel.foodConsumption.observe(viewLifecycleOwner, Observer { response ->
+            when (response) {
+                is Resource.Success -> {
+                    val querySnapshot = response.data
+                    if (querySnapshot != null) {
+                        this.querySnapshot = querySnapshot
+                        setEnergyProgressBar()
+                        setAvoidNutrientProgressBar()
+                        setTakeNutrientProgressBar()
+                        hideProgressBar()
+                    } else {
+                        hideProgressBar()
+                        Toast.makeText(context, "No record found!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressBar()
+                }
+                is Resource.Error -> {
+                    hideProgressBar()
+                    Toast.makeText(context, "Error ${response.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
 
-        setEnergyProgressBar()
-        setAvoidNutrientProgressBar()
-        setTakeNutrientProgressBar()
 
         fab_add.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchFoodFragment2)
@@ -101,30 +89,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
     }
-
-//
-//    private fun sumNutritions(responses: QuerySnapshot, currentDate: Calendar, nutrientId: Int): Float {
-//        var nutrientSum = 0F
-//        for (response in responses.documents){
-//            val foodConsumptionInstance = response.toObject<FoodConsumption>()
-//            val foodConsumptionDate =
-//                foodConsumptionInstance!!.date!!.get("date")!!.toDate()
-//            if (foodConsumptionDate.year == currentDate.time.year && foodConsumptionDate.month == currentDate.time.month
-//                && foodConsumptionDate.date == currentDate.time.date
-//            ) {
-//                val nutrientList = foodConsumptionInstance.foodNutrientList?.foodNutrients
-//                if (nutrientList != null) {
-//                    for (nutrient in nutrientList) {
-//                        if (nutrient.nutrientId == nutrientId) {
-//                            nutrientSum = (nutrientSum + nutrient.value!!).toFloat()
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return nutrientSum
-//    }
-
 
 
     private fun dialogAgeWeight() {
@@ -153,7 +117,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     hideProgressBar()
                 }
                 is Resource.Loading -> {
-                    Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
                     showProgressBar()
                 }
             }
@@ -177,6 +140,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         is Resource.SuccessFirebaseUpload -> {
                             Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
                                 .show()
+                            setEnergyProgressBar()
                             dialogBox.cancel()
                             hideProgressBar()
                         }
@@ -239,6 +203,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                     response.message,
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                setAvoidNutrientProgressBar()
                                 dialogBox.cancel()
                                 hideProgressBar()
                             }
@@ -252,8 +217,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 hideProgressBar()
                             }
                             is Resource.Loading -> {
-                                Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT)
-                                    .show()
                                 showProgressBar()
                             }
                         }
@@ -306,6 +269,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
+                                setTakeNutrientProgressBar()
                                 dialogBox.cancel()
                                 hideProgressBar()
                             }
@@ -320,8 +284,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 hideProgressBar()
                             }
                             is Resource.Loading -> {
-                                Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT)
-                                    .show()
                                 showProgressBar()
                             }
                         }
@@ -336,27 +298,30 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
 
-
     private fun setAvoidNutrientProgressBar() {
         viewModel.getAvoidNutrient()
         viewModel.getAvoidNutrientMutableLiveData.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is Resource.Success -> {
                     val avoidNutrient = response.data?.toObject<Avoid>()
-                    var currentValue = 40F
+                    var currentValue = 0F
+                    val maxValue: Float
                     if (avoidNutrient != null) {
-//                        if (avoidNutrient.id != null && querySnapshot!= null){
-//                            currentValue = sumNutritions(querySnapshot!!,currentDate,avoidNutrient.id)
-//                        }
-                        avoidNutrient.value?.let {
-                            setProgressBar(
-                                currentValue, it,
-                                circular_progress_avoid,
-                                tv_avoidCurrent,
-                                tv_avoidMax,
-                                Color.RED
-                            )
+                        maxValue = avoidNutrient.value!!
+                        if (avoidNutrient.id != null && querySnapshot != null) {
+                            currentValue =
+                                sumNutritions(querySnapshot!!, currentDate, avoidNutrient.id)
+                            val nutrientName = SpinnerHelper.getNutrientName(avoidNutrient.id)
+                            tv_maxNutriMessage.setText("Max $nutrientName/Day")
+                            tv_maxNutriMessage.setTextColor(Color.RED)
                         }
+                        setProgressBar(
+                            currentValue, maxValue,
+                            circular_progress_avoid,
+                            tv_avoidCurrent,
+                            tv_avoidMax,
+                            Color.RED
+                        )
                     } else {
                         setProgressBar(
                             0F, 0F,
@@ -374,7 +339,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     hideProgressBar()
                 }
                 is Resource.Loading -> {
-                    Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
                     showProgressBar()
                 }
             }
@@ -387,16 +351,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             when (response) {
                 is Resource.Success -> {
                     val takeNutrient = response.data?.toObject<Take>()
+                    var currentValue = 0F
+                    val maxValue: Float
                     if (takeNutrient != null) {
-                        takeNutrient.value?.let {
-                            setProgressBar(
-                                15.5F, it,
-                                circular_progress_take,
-                                tv_takeCurrent,
-                                tv_takeMax,
-                                Color.RED
-                            )
+                        maxValue = takeNutrient.value!!
+                        if (takeNutrient.id != null && querySnapshot != null) {
+                            currentValue =
+                                sumNutritions(querySnapshot!!, currentDate, takeNutrient.id)
+                            val nutrientName = SpinnerHelper.getNutrientName(takeNutrient.id)
+                            tv_minNutriMessage.setText("Min $nutrientName/Day")
+                            tv_minNutriMessage.setTextColor(Color.GREEN)
                         }
+                        setProgressBar(
+                            currentValue, maxValue,
+                            circular_progress_take,
+                            tv_takeCurrent,
+                            tv_takeMax,
+                            Color.GREEN
+                        )
                     } else {
                         setProgressBar(
                             0F, 0F,
@@ -414,31 +386,37 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     hideProgressBar()
                 }
                 is Resource.Loading -> {
-                    Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
                     showProgressBar()
                 }
             }
         })
     }
 
-    private fun setEnergyProgressBar(){
+    private fun setEnergyProgressBar() {
         viewModel.getAgeWeight()
         viewModel.getAgeWeightMutableLiveData.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is Resource.Success -> {
                     val ageWeight = response.data?.toObject<AgeWeight>()
+                    var currentValue = 0F
                     if (ageWeight != null) {
+                        if (querySnapshot != null) {
+                            currentValue = sumNutritions(querySnapshot!!, currentDate, 1008)
+                            tv_aveEnergyMessage.setTextColor(Color.MAGENTA)
+                        }
                         val averageEnergy: Float = calculateAverageEnergy(ageWeight)
                         averageEnergy.let {
-                            setProgressBar(15.5F, it,
+                            setProgressBar(
+                                currentValue, it,
                                 circular_progress_energy,
                                 tv_energyCurrent,
                                 tv_energyMax,
-                                Color.RED
+                                Color.MAGENTA
                             )
                         }
                     } else {
-                        setProgressBar(0F, 0F,
+                        setProgressBar(
+                            0F, 0F,
                             circular_progress_avoid,
                             tv_takeCurrent,
                             tv_takeMax,
@@ -453,7 +431,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     hideProgressBar()
                 }
                 is Resource.Loading -> {
-                    Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
                     showProgressBar()
                 }
             }
@@ -485,7 +462,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return 0F
     }
 
-    private fun setProgressBar(currentValue: Float, maxValue: Float, circularProgressBar: CircularProgressBar, currentTextView: TextView, maxTextView: TextView, color: Int
+    private fun setProgressBar(
+        currentValue: Float,
+        maxValue: Float,
+        circularProgressBar: CircularProgressBar,
+        currentTextView: TextView,
+        maxTextView: TextView,
+        color: Int
     ) {
         currentTextView.text = currentValue.toString()
         maxTextView.text = "/$maxValue"
@@ -513,8 +496,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
 
             // Set Width
-            progressBarWidth = 7f // in DP
-            backgroundProgressBarWidth = 3f // in DP
+            progressBarWidth = 10f // in DP
+            backgroundProgressBarWidth = 5f // in DP
 
             // Other
             roundBorder = true
@@ -524,6 +507,34 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
     }
+
+
+    private fun sumNutritions(
+        responses: QuerySnapshot,
+        currentDate: Calendar,
+        nutrientId: Int
+    ): Float {
+        var nutrientSum = 0F
+        for (response in responses.documents) {
+            val foodConsumptionInstance = response.toObject<FoodConsumption>()
+            val foodConsumptionDate =
+                foodConsumptionInstance!!.date!!.get("date")!!.toDate()
+            if (foodConsumptionDate.year == currentDate.time.year && foodConsumptionDate.month == currentDate.time.month
+                && foodConsumptionDate.date == currentDate.time.date
+            ) {
+                val nutrientList = foodConsumptionInstance.foodNutrientList?.foodNutrients
+                if (nutrientList != null) {
+                    for (nutrient in nutrientList) {
+                        if (nutrient.nutrientId == nutrientId) {
+                            nutrientSum = (nutrientSum + nutrient.value!!).toFloat()
+                        }
+                    }
+                }
+            }
+        }
+        return nutrientSum
+    }
+
     private fun hideProgressBar() {
         progress_bar_home_fragment.visibility = View.INVISIBLE
         isLoading = false
