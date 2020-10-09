@@ -171,7 +171,7 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
         val viewport = Viewport(lineChart.maximumViewport)
         viewport.bottom = 0F
         viewport.left = 0F
-        viewport.top = ((maxValue*110)/100).toFloat()
+        viewport.top = ((maxValue*130)/100).toFloat()
         lineChart.maximumViewport = viewport
         lineChart.currentViewport = viewport
     }

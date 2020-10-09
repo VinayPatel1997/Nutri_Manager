@@ -14,7 +14,6 @@ class FoodActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_food)
-//        currentUID = intent.getStringExtra("userID")
         val foodRepository = FoodRepository()
         val viewModelProviderFactory = FoodViewModelProviderFactory(application, foodRepository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(FoodViewModel::class.java)

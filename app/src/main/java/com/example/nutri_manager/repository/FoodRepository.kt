@@ -1,15 +1,11 @@
 package com.example.nutri_manager.repository
 
-import android.widget.Toast
 import com.example.nutri_manager.api.RetrofitInstance
-import com.example.nutri_manager.models.FoodConsumption
+import com.example.nutri_manager.models.models_progressbar.AgeWeight
+import com.example.nutri_manager.models.models_progressbar.Avoid
+import com.example.nutri_manager.models.models_progressbar.Take
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 
 class FoodRepository(
@@ -17,11 +13,16 @@ class FoodRepository(
 ) {
 
 
-    val collectionRef = FirebaseAuth.getInstance().uid!!.let {
-        FirebaseFirestore.getInstance().collection(
-            it
-        )
+    val userId = FirebaseAuth.getInstance().uid
+
+    val collectionRefFoodConsumption = userId!!.let {
+        FirebaseFirestore.getInstance().collection(it)
     }
+
+    val collectionRefPreferences = userId!!.let {
+        FirebaseFirestore.getInstance().collection("preferences")
+    }
+
     suspend fun searchFoods(searchQuery: String, pageNumber: Int) =
         RetrofitInstance.api.getFood(searchQuery, pageNumber)
 
@@ -29,5 +30,29 @@ class FoodRepository(
         RetrofitInstance.mapAPI.getPlaces(url)
 
     suspend fun getFoodConsumption() =
-        collectionRef.get()
+        collectionRefFoodConsumption.get()
+
+
+    suspend fun getTodaysFoodConsumption() = collectionRefFoodConsumption.document()
+
+
+    // uploading preferences
+    suspend fun uploadAgeWeight(ageWeight: AgeWeight) =
+        collectionRefPreferences.document("ageWeight$userId").set(ageWeight)
+
+    suspend fun uploadAvoid(avoid: Avoid) =
+        collectionRefPreferences.document("avoid$userId").set(avoid)
+
+    suspend fun uploadtake(take: Take) =
+        collectionRefPreferences.document("take$userId").set(take)
+
+
+//    // get preferences
+    suspend fun getAgeWeight() =
+        collectionRefPreferences.document("ageWeight$userId").get()
+    suspend fun getAvoidNutrient() =
+        collectionRefPreferences.document("avoid$userId").get()
+    suspend fun getTakeNutrient() =
+        collectionRefPreferences.document("take$userId").get()
+
 }
