@@ -1,6 +1,7 @@
 package com.example.nutri_manager.repository
 
 import com.example.nutri_manager.api.RetrofitInstance
+import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.models.models_progressbar.AgeWeight
 import com.example.nutri_manager.models.models_progressbar.Avoid
 import com.example.nutri_manager.models.models_progressbar.Take
@@ -33,8 +34,8 @@ class FoodRepository(
         collectionRefFoodConsumption.get()
 
 
-    suspend fun getTodaysFoodConsumption() = collectionRefFoodConsumption.document()
-
+    suspend fun uploadFoodConsumption(foodConsumption: FoodConsumption, docPath: String) =
+        collectionRefFoodConsumption.document(docPath).set(foodConsumption)
 
     // uploading preferences
     suspend fun uploadAgeWeight(ageWeight: AgeWeight) =

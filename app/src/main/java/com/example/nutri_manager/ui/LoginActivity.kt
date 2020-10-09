@@ -29,6 +29,12 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         auth = FirebaseAuth.getInstance()
+        if (auth != null){
+            Intent(this@LoginActivity,FoodActivity::class.java).also {
+                startActivity(it)
+                finish()
+            }
+        }
         btnGoogleSignIn.setOnClickListener {
             val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.web_client_id)).requestEmail().build()

@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.nutri_manager.FoodsApplication
 import com.example.nutri_manager.map_models.MapResponse
+import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.models.FoodResponse
 import com.example.nutri_manager.models.models_progressbar.AgeWeight
 import com.example.nutri_manager.models.models_progressbar.Avoid
@@ -33,6 +34,8 @@ class FoodViewModel(
     val searchFoods: MutableLiveData<Resource<FoodResponse>> = MutableLiveData()
     val getNearbyPlaces: MutableLiveData<Resource<MapResponse>> = MutableLiveData()
     val foodConsumption: MutableLiveData<Resource<QuerySnapshot>> = MutableLiveData()
+
+    val uploadFoodConsumptionMutableLiveData: MutableLiveData<Resource<UploadResponse>> = MutableLiveData()
 
     val uploadAgeWeightMutableLiveData: MutableLiveData<Resource<UploadResponse>> = MutableLiveData()
     val uploadAvoidNutrientMutableLiveData: MutableLiveData<Resource<UploadResponse>> = MutableLiveData()
@@ -70,6 +73,28 @@ class FoodViewModel(
         }
     }
 
+
+
+    // API Call Firebase (Upload food consumption)
+    fun uploadFoodConsumption(foodConsumption: FoodConsumption, docPath: String) = viewModelScope.launch {
+        safeUploadFoodConsumption(foodConsumption, docPath)
+    }
+    private suspend fun safeUploadFoodConsumption(foodConsumption: FoodConsumption, docPath: String) {
+        uploadFoodConsumptionMutableLiveData.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()) {
+                foodRepository.uploadFoodConsumption(foodConsumption, docPath).await()
+                uploadFoodConsumptionMutableLiveData.postValue(Resource.SuccessFirebaseUpload("Food Consumption uploaded"))
+            } else {
+                uploadFoodConsumptionMutableLiveData.postValue(Resource.Error("No internet connection"))
+            }
+        } catch (t: Throwable) {
+            when (t) {
+                is IOException -> uploadFoodConsumptionMutableLiveData.postValue(Resource.Error("Network Failure: ${t.message}"))
+                else -> uploadFoodConsumptionMutableLiveData.postValue(Resource.Error("Conversion Error: ${t.message}"))
+            }
+        }
+    }
 
 
     // API Call Firebase (Get Preferences Age Weight)

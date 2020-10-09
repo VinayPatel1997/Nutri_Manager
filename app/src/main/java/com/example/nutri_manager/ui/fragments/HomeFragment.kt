@@ -359,7 +359,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             currentValue =
                                 sumNutritions(querySnapshot!!, currentDate, takeNutrient.id)
                             val nutrientName = SpinnerHelper.getNutrientName(takeNutrient.id)
-                            tv_minNutriMessage.setText("Min $nutrientName/Day")
+                            tv_minNutriMessage.setText("Max $nutrientName/Day")
                             tv_minNutriMessage.setTextColor(Color.GREEN)
                         }
                         setProgressBar(
@@ -496,8 +496,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
 
             // Set Width
-            progressBarWidth = 10f // in DP
-            backgroundProgressBarWidth = 5f // in DP
+            progressBarWidth = 7f // in DP
+            backgroundProgressBarWidth = 3f // in DP
 
             // Other
             roundBorder = true
