@@ -35,13 +35,10 @@ class NutrientAdapter : RecyclerView.Adapter<NutrientAdapter.NutrientViewHolder>
     override fun onBindViewHolder(holder: NutrientViewHolder, position: Int) {
         val nutrient  = differ.currentList[position]
         holder.itemView.apply {
-            nutrient_id.text = nutrient.nutrientId.toString()
             nutrient_name.text = nutrient.nutrientName
-            nutrient_number.text = nutrient.nutrientNumber
             nutrient_value.text = nutrient.value.toString()
             nutrient_unit.text = nutrient.unitName
-            derivation_code.text = nutrient.derivationCode
-            derivation_description.text = nutrient.derivationDescription
+
         }
     }
 

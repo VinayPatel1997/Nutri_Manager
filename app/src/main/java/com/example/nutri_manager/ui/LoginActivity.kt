@@ -2,6 +2,7 @@ package com.example.nutri_manager.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.nutri_manager.R
@@ -13,6 +14,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,18 +31,22 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         auth = FirebaseAuth.getInstance()
-        if (auth != null){
+        if (auth.currentUser != null){
+            showProgressBar()
             Intent(this@LoginActivity,FoodActivity::class.java).also {
                 startActivity(it)
                 finish()
             }
+            hideProgressBar()
         }
         btnGoogleSignIn.setOnClickListener {
+            showProgressBar()
             val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.web_client_id)).requestEmail().build()
 
             val signInClient = GoogleSignIn.getClient(this,options)
             signInClient.signInIntent.also { startActivityForResult(it, REQUEST_CODE_SIGN_IN) }
+            hideProgressBar()
         }
     }
     private fun googleAuthForFirebase(account: GoogleSignInAccount) {
@@ -73,4 +79,17 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    private fun hideProgressBar() {
+        progress_bar_login_activity.visibility = View.INVISIBLE
+        isLoading = false
+    }
+
+    private fun showProgressBar() {
+        progress_bar_login_activity.visibility = View.VISIBLE
+        isLoading = true
+    }
+
+    var isLoading = false
 }

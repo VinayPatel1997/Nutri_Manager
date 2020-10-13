@@ -2,6 +2,7 @@ package com.example.nutri_manager.ui.fragments
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -18,13 +19,11 @@ import com.example.nutri_manager.ui.FoodActivity
 import com.example.nutri_manager.ui.FoodViewModel
 import com.example.nutri_manager.util.Constants
 import com.example.nutri_manager.util.Resource
+import com.google.common.collect.ImmutableList
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_food_view.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
-import java.time.format.DateTimeFormatter
+import okhttp3.internal.toImmutableList
 
 
 class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
@@ -33,8 +32,8 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
     lateinit var nutrientAdapter: NutrientAdapter
 
     val args: FoodViewFragmentArgs by navArgs()
-    lateinit var nutrientList: MutableList<FoodNutrient>
     lateinit var food: Food
+    final lateinit var defaultNutrientList: ImmutableList<FoodNutrient>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,9 +41,16 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
         viewModel = (activity as FoodActivity).viewModel
         setupRecyclerView()
         food = args.food
-        nutrientList = food.foodNutrients!!
-        nutrientAdapter.differ.submitList(nutrientList.toList())
+        defaultNutrientList = ImmutableList.copyOf(food.foodNutrients)
+        val nutrientList: MutableList<FoodNutrient> = arrayListOf()
+        nutrientList.addAll(defaultNutrientList)
 
+//        val defaultArray: Array<FoodNutrient> = defaultNutrientList.toTypedArray();
+////        for (item in defaultArray){
+////            val iteem : FoodNutrient = item;
+////            nutrientList.add(iteem);
+////        }
+        nutrientAdapter.differ.submitList(nutrientList.toList())
 
         var job: Job? = null
         etAmount.addTextChangedListener { editable ->
@@ -57,12 +63,12 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
                             showProgressBar()
                             coroutineScope {
                                 async {
-                                    for (index in 0 until nutrientList.size) {
-                                        nutrientList[index].value =
-                                            (nutrientList[index].value?.times(
-                                                editable.toString()
-                                                    .toInt()
-                                            ))?.div(100)
+                                    for (index in 0 until defaultNutrientList.size) {
+                                        val defValue = defaultNutrientList[index].value
+                                        Log.d("AAAAAAAA", "def before:$defValue")
+                                        nutrientList[index].value = (defValue?.times(editable.toString().toInt()))?.div(100)
+                                        val defAfter = defaultNutrientList[index].value
+                                        Log.d("AAAAAAAA", "def after:$defAfter")
                                     }
                                 }.await()
                                 delay(2000)
@@ -70,6 +76,7 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
                             }
                             nutrientList.let {
                                 nutrientAdapter.differ.submitList(nutrientList.toList())
+                                nutrientAdapter.notifyDataSetChanged()
                             }
                         } catch (e: Exception) {
                             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
@@ -80,64 +87,47 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
         }
 
         btAdd.setOnClickListener {
-            etAmount?.let {
+            val timestamp = Timestamp.now()
+            val updatedFoodObject = Food(
+                food.allHighlightFields,
+                food.brandOwner,
+                food.dataType,
+                food.description,
+                food.fdcId,
+                nutrientList,
+                food.gtinUpc,
+                food.ingredients,
+                food.publishedDate,
+                food.score,
+            )
 
-                val timestamp = Timestamp.now()
+            val currentDateTime: HashMap<String, Timestamp> = HashMap()
+            currentDateTime.put("date", timestamp)
 
-                val updatedFoodObject = Food(
-                    food.allHighlightFields,
-                    food.brandOwner,
-                    food.dataType,
-                    food.description,
-                    food.fdcId,
-                    nutrientList,
-                    food.gtinUpc,
-                    food.ingredients,
-                    food.publishedDate,
-                    food.score,
-                )
-
-                val currentDateTime: HashMap<String, Timestamp>  = HashMap()
-                currentDateTime.put("date",timestamp)
-
-                viewModel.uploadFoodConsumption(FoodConsumption(currentDateTime, updatedFoodObject), timestamp.toString())
-                viewModel.uploadFoodConsumptionMutableLiveData.observe(viewLifecycleOwner, { response ->
-                    when (response){
-                        is Resource.SuccessFirebaseUpload -> {
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                            hideProgressBar()
-                        }
-                        is Resource.Error -> {
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                            hideProgressBar()
-                        }
-                        is Resource.Loading -> {
-                            showProgressBar()
-                        }
+            viewModel.uploadFoodConsumption(
+                FoodConsumption(currentDateTime, updatedFoodObject),
+                timestamp.toString()
+            )
+            viewModel.uploadFoodConsumptionMutableLiveData.observe(viewLifecycleOwner, { response ->
+                when (response) {
+                    is Resource.SuccessFirebaseUpload -> {
+                        Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
+                            .show()
+                        hideProgressBar()
                     }
-                })
-//                uploadFoodConsumption(FoodConsumption(currentDateTime, updatedFoodObject), timestamp.toString())
-
-            }
+                    is Resource.Error -> {
+                        Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
+                            .show()
+                        hideProgressBar()
+                    }
+                    is Resource.Loading -> {
+                        showProgressBar()
+                    }
+                }
+            })
         }
     }
 
-    private fun uploadFoodConsumption(foodConsumption: FoodConsumption, docPath: String) =
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                FirebaseAuth.getInstance().uid?.let {
-                    FirebaseFirestore.getInstance().collection(it).document(docPath)
-                        .set(foodConsumption)
-                }?.await()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Successfully Added", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
 
     private fun setupRecyclerView() {
         nutrientAdapter = NutrientAdapter()
