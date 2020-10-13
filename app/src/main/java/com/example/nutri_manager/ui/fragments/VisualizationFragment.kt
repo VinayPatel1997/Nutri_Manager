@@ -22,6 +22,7 @@ import com.anychart.graphics.vector.Stroke
 import com.example.nutri_manager.R
 import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.other.CustomDataEntry
+import com.example.nutri_manager.other.SpinnerHelper
 import com.example.nutri_manager.ui.FoodActivity
 import com.example.nutri_manager.ui.FoodViewModel
 import com.example.nutri_manager.util.Resource
@@ -40,19 +41,6 @@ import lecho.lib.hellocharts.model.*
 import java.lang.StringBuilder
 import java.util.*
 import kotlin.collections.ArrayList
-
-/*
-duration position
-0 -> 7 days
-1 -> 30 days
-2 -> 6 months
-3 -> 12 months
-
-type position
-0 -> list
-1 -> visualization
-*/
-
 
 class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
 
@@ -87,8 +75,8 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
                 ) {
                     durationPosition = position
                     if (querySnapshot != null && typePosition != -1) {
-                        val nutrientId = getNutrintId()
-                        val unit = getNutrientUnit(nutrientId)
+                        val nutrientId = SpinnerHelper.getNutrintId(typePosition)
+                        val unit = SpinnerHelper.getNutrientUnit(nutrientId)
                         val lebel = "${adapterView?.getItemAtPosition(typePosition)}($unit)"
                         initializingChartData(querySnapshot, nutrientId, lebel)
                     }
@@ -107,8 +95,8 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
                 ) {
                     if (querySnapshot != null && durationPosition != -1){
                         typePosition = position
-                        val nutrientId = getNutrintId()
-                        val unit = getNutrientUnit(nutrientId)
+                        val nutrientId = SpinnerHelper.getNutrintId(typePosition)
+                        val unit = SpinnerHelper.getNutrientUnit(nutrientId)
                         val lebel = "${adapterView?.getItemAtPosition(typePosition)}($unit)"
                         initializingChartData(querySnapshot, nutrientId, lebel )
                     }
@@ -255,33 +243,6 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
         }
     }
 
-    private fun getNutrintId(): Int {
-        if (typePosition == 0) {
-            return 1008                 // energy   kJ
-        } else if (typePosition == 1) {
-            return 1003                 // protein  G
-        } else if (typePosition == 2) {
-            return 1104                 // vitamin A    IU
-        } else if (typePosition == 3) {
-            return 1089                 // Iron         MG
-        } else {
-            return 1093                 // sodium       MG
-        }
-    }
-
-    private fun getNutrientUnit(id: Int): String? {
-        if (id == 1008) {
-            return "kJ"
-        } else if (id == 1003) {
-            return "G"
-        } else if (id == 1104) {
-            return "IU"
-        } else if (id == 1089 || id == 1093) {
-            return "MG"
-        } else {
-            return "Unit"
-        }
-    }
 
     private fun hideProgressBar() {
         progress_bar_visualization.visibility = View.INVISIBLE

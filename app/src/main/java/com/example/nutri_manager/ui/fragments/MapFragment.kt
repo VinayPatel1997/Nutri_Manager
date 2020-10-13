@@ -80,7 +80,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
                                         is Resource.Success -> {
                                             hideProgressBar()
                                             response.data?.let { mapResponse ->
-//                        map!!.clear()
+                                                map!!.clear()
                                                 Toast.makeText(
                                                     context,
                                                     "Map response ${mapResponse.status}, ${mapResponse.results.toList().size}",

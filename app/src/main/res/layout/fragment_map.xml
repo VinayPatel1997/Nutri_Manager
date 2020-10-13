@@ -25,14 +25,23 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Nearby Hospitals"
+        android:textAllCaps="false"
+        android:fontFamily="@font/andika"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        app:icon="@drawable/ic_baseline_near_me_24"
+        app:iconTint="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        android:contentDescription="Add"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

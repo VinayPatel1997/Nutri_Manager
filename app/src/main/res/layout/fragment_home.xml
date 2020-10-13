@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    >
 
 
     <ScrollView
@@ -187,17 +187,29 @@
                 android:layout_marginBottom="20dp"
                 android:fontFamily="@font/andika"
                 android:text="Minimum Nutrient/Day"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:paddingBottom="40dp"
+                />
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_add_round"
+        android:layout_margin="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Add Diet"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/andika"
+        android:textColor="@android:color/white"
+        app:icon="@drawable/ic_baseline_add_24"
+        app:iconTint="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        android:contentDescription="Add"
+        />
 
     <ProgressBar
         android:id="@+id/progress_bar_home_fragment"
