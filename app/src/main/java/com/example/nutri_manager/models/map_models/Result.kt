@@ -1,4 +1,4 @@
-package com.example.nutri_manager.map_models
+package com.example.nutri_manager.models.map_models
 
 data class Result(
     val geometry: Geometry,

@@ -9,14 +9,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.nutri_manager.FoodsApplication
-import com.example.nutri_manager.map_models.MapResponse
+import com.example.nutri_manager.models.map_models.MapResponse
 import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.models.FoodResponse
 import com.example.nutri_manager.models.models_progressbar.AgeWeight
 import com.example.nutri_manager.models.models_progressbar.Avoid
 import com.example.nutri_manager.models.models_progressbar.Take
-import com.example.nutri_manager.models.models_progressbar.UploadResponse
-import com.example.nutri_manager.repository.FoodRepository
+import com.example.nutri_manager.models.UploadResponse
+import com.example.nutri_manager.repository.Repository
 import com.example.nutri_manager.util.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
@@ -26,14 +26,14 @@ import okio.IOException
 import retrofit2.Response
 
 
-class FoodViewModel(
+class ViewModel(
     app: Application,
-    val foodRepository: FoodRepository
+    val repository: Repository
 ) : AndroidViewModel(app) {
 
-    val searchFoods: MutableLiveData<Resource<FoodResponse>> = MutableLiveData()
-    val getNearbyPlaces: MutableLiveData<Resource<MapResponse>> = MutableLiveData()
-    val foodConsumption: MutableLiveData<Resource<QuerySnapshot>> = MutableLiveData()
+    val searchFoodsMutableLiveData: MutableLiveData<Resource<FoodResponse>> = MutableLiveData()
+    val getNearbyPlacesMutableLiveData: MutableLiveData<Resource<MapResponse>> = MutableLiveData()
+    val foodConsumptionMutableLiveData: MutableLiveData<Resource<QuerySnapshot>> = MutableLiveData()
 
     val uploadFoodConsumptionMutableLiveData: MutableLiveData<Resource<UploadResponse>> = MutableLiveData()
 
@@ -57,22 +57,21 @@ class FoodViewModel(
 
     }
     private suspend fun safeGetFoodConsumptionCall() {
-        foodConsumption.postValue(Resource.Loading())
+        foodConsumptionMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = foodRepository.getFoodConsumption().await()
-                foodConsumption.postValue(Resource.Success(response))
+                val response = repository.getFoodConsumption().await()
+                foodConsumptionMutableLiveData.postValue(Resource.Success(response))
             } else {
-                foodConsumption.postValue(Resource.Error("No internet connection"))
+                foodConsumptionMutableLiveData.postValue(Resource.Error("No internet connection"))
             }
         } catch (t: Throwable) {
             when (t) {
-                is IOException -> foodConsumption.postValue(Resource.Error("Network Failure: ${t.message}"))
-                else -> foodConsumption.postValue(Resource.Error("Conversion Error: ${t.message}"))
+                is IOException -> foodConsumptionMutableLiveData.postValue(Resource.Error("Network Failure: ${t.message}"))
+                else -> foodConsumptionMutableLiveData.postValue(Resource.Error("Conversion Error: ${t.message}"))
             }
         }
     }
-
 
 
     // API Call Firebase (Upload food consumption)
@@ -83,7 +82,7 @@ class FoodViewModel(
         uploadFoodConsumptionMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                foodRepository.uploadFoodConsumption(foodConsumption, docPath).await()
+                repository.uploadFoodConsumption(foodConsumption, docPath).await()
                 uploadFoodConsumptionMutableLiveData.postValue(Resource.SuccessFirebaseUpload("Food Consumption uploaded"))
             } else {
                 uploadFoodConsumptionMutableLiveData.postValue(Resource.Error("No internet connection"))
@@ -96,7 +95,7 @@ class FoodViewModel(
         }
     }
 
-
+//*************************************** Preferences Start **************************************************
     // API Call Firebase (Get Preferences Age Weight)
     fun getAgeWeight() = viewModelScope.launch {
         safeGetAgeWeight()
@@ -105,7 +104,7 @@ class FoodViewModel(
         getAgeWeightMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = foodRepository.getAgeWeight().await()
+                val response = repository.getAgeWeight().await()
                 getAgeWeightMutableLiveData.postValue(Resource.Success(response))
             } else {
                 getAgeWeightMutableLiveData.postValue(Resource.Error("No internet connection"))
@@ -127,7 +126,7 @@ class FoodViewModel(
         getAvoidNutrientMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = foodRepository.getAvoidNutrient().await()
+                val response = repository.getAvoidNutrient().await()
                 getAvoidNutrientMutableLiveData.postValue(Resource.Success(response))
             } else {
                 getAvoidNutrientMutableLiveData.postValue(Resource.Error("No internet connection"))
@@ -149,7 +148,7 @@ class FoodViewModel(
         getTakeNutrientMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = foodRepository.getTakeNutrient().await()
+                val response = repository.getTakeNutrient().await()
                 getTakeNutrientMutableLiveData.postValue(Resource.Success(response))
             } else {
                 getTakeNutrientMutableLiveData.postValue(Resource.Error("No internet connection"))
@@ -171,10 +170,10 @@ class FoodViewModel(
         uploadAgeWeightMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                foodRepository.uploadAgeWeight(ageWeightPara).await()
+                repository.uploadAgeWeight(ageWeightPara).await()
                 uploadAgeWeightMutableLiveData.postValue(Resource.SuccessFirebaseUpload("Age and weight uploaded successfully"))
             } else {
-                foodConsumption.postValue(Resource.Error("No internet connection"))
+                foodConsumptionMutableLiveData.postValue(Resource.Error("No internet connection"))
             }
         } catch (t: Throwable) {
             when (t) {
@@ -185,7 +184,6 @@ class FoodViewModel(
     }
 
 
-
     // API Call Firebase (Upload Preferences Avoid nutrient)
     fun uploadAvoidNutrient(avoidNutrientPara: Avoid) = viewModelScope.launch {
         safeUploadAvoidNutrient(avoidNutrientPara)
@@ -194,10 +192,10 @@ class FoodViewModel(
         uploadAvoidNutrientMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                foodRepository.uploadAvoid(avoidNutrientPara).await()
+                repository.uploadAvoid(avoidNutrientPara).await()
                 uploadAvoidNutrientMutableLiveData.postValue(Resource.SuccessFirebaseUpload("Nutrient to avoid uploaded successfully"))
             } else {
-                foodConsumption.postValue(Resource.Error("No internet connection"))
+                foodConsumptionMutableLiveData.postValue(Resource.Error("No internet connection"))
             }
         } catch (t: Throwable) {
             when (t) {
@@ -208,7 +206,6 @@ class FoodViewModel(
     }
 
 
-
     // API Call Firebase (Upload Preferences Take Nutrient)
     fun uploadTakeNutrient(takeNutrientPara: Take) = viewModelScope.launch {
         safeUploadTakeNutrient(takeNutrientPara)
@@ -217,10 +214,10 @@ class FoodViewModel(
         uploadTakeNutrientMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                foodRepository.uploadtake(takeNutrientPara).await()
+                repository.uploadtake(takeNutrientPara).await()
                 uploadTakeNutrientMutableLiveData.postValue(Resource.SuccessFirebaseUpload("Nutrient to take uploaded successfully"))
             } else {
-                foodConsumption.postValue(Resource.Error("No internet connection"))
+                foodConsumptionMutableLiveData.postValue(Resource.Error("No internet connection"))
             }
         } catch (t: Throwable) {
             when (t) {
@@ -229,31 +226,30 @@ class FoodViewModel(
             }
         }
     }
+// ***************************************************** Preferences End ************************************************
 
 
+// ***************************************************** Food Data Central API Call **************************************
     // API Call FoodData Central (Search Food)
-
     fun searchFoods(searchQuery: String) = viewModelScope.launch {
         safeSearchFoodsCall(searchQuery)
     }
-
     private suspend fun safeSearchFoodsCall(searchQuery: String) {
-        searchFoods.postValue(Resource.Loading())
+        searchFoodsMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = foodRepository.searchFoods(searchQuery, searchFoodsPage)
-                searchFoods.postValue(handleSearchFoodsResponse(response))
+                val response = repository.searchFoods(searchQuery, searchFoodsPage)
+                searchFoodsMutableLiveData.postValue(handleSearchFoodsResponse(response))
             } else {
-                searchFoods.postValue(Resource.Error("No internet connection"))
+                searchFoodsMutableLiveData.postValue(Resource.Error("No internet connection"))
             }
         } catch (t: Throwable) {
             when (t) {
-                is IOException -> searchFoods.postValue(Resource.Error("Network Failure"))
-                else -> searchFoods.postValue(Resource.Error("Conversion Error"))
+                is IOException -> searchFoodsMutableLiveData.postValue(Resource.Error("Network Failure"))
+                else -> searchFoodsMutableLiveData.postValue(Resource.Error("Conversion Error"))
             }
         }
     }
-
     private fun handleSearchFoodsResponse(response: Response<FoodResponse>): Resource<FoodResponse> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
@@ -271,7 +267,7 @@ class FoodViewModel(
         return Resource.Error(response.message())
     }
 
-
+// ***************************************** Google Map ************************************************
     // API Calls for Map
 
     fun getNearbyPlaces(url: String) = viewModelScope.launch {
@@ -279,23 +275,21 @@ class FoodViewModel(
     }
 
     private suspend fun safeGetNearbyPlacesCall(url: String) {
-
-        getNearbyPlaces.postValue(Resource.Loading())
+        getNearbyPlacesMutableLiveData.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = foodRepository.getNearbyPlaces(url)
-                getNearbyPlaces.postValue(handleNearByPlaceResponse(response))
+                val response = repository.getNearbyPlaces(url)
+                getNearbyPlacesMutableLiveData.postValue(handleNearByPlaceResponse(response))
             } else {
-                getNearbyPlaces.postValue(Resource.Error("No internet connection"))
+                getNearbyPlacesMutableLiveData.postValue(Resource.Error("No internet connection"))
             }
         } catch (t: Throwable) {
             when (t) {
-                is IOException -> getNearbyPlaces.postValue(Resource.Error("Network Failure"))
-                else -> getNearbyPlaces.postValue(Resource.Error("Conversion Error"))
+                is IOException -> getNearbyPlacesMutableLiveData.postValue(Resource.Error("Network Failure"))
+                else -> getNearbyPlacesMutableLiveData.postValue(Resource.Error("Conversion Error"))
             }
         }
     }
-
     private fun handleNearByPlaceResponse(response: Response<MapResponse>): Resource<MapResponse> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->

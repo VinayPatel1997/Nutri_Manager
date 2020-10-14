@@ -8,12 +8,12 @@
 
     <item
         android:id="@+id/visualizationFragment"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/ic_baseline_show_chart_24"
         android:title="Visualization" />
 
     <item
         android:id="@+id/mapFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/ic_baseline_near_me_24"
         android:title="Map" />
 
 </menu>

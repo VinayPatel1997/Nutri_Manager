@@ -1,6 +1,6 @@
 package com.example.nutri_manager.repository
 
-import com.example.nutri_manager.api.RetrofitInstance
+import com.example.nutri_manager.apis.RetrofitInstance
 import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.models.models_progressbar.AgeWeight
 import com.example.nutri_manager.models.models_progressbar.Avoid
@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class FoodRepository(
+class Repository(
 //    val db : FoodDatabase-
 ) {
 

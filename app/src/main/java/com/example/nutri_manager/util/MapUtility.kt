@@ -1,4 +1,4 @@
-package com.example.nutri_manager.other
+package com.example.nutri_manager.util
 
 import android.Manifest
 import android.content.Context

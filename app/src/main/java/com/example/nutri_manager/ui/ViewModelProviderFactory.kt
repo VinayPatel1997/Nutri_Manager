@@ -3,13 +3,13 @@ package com.example.nutri_manager.ui
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.nutri_manager.repository.FoodRepository
+import com.example.nutri_manager.repository.Repository
 
-class FoodViewModelProviderFactory(
+class ViewModelProviderFactory(
     val app: Application,
-    val foodRepository: FoodRepository
+    val repository: Repository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return FoodViewModel(app, foodRepository) as T
+        return ViewModel(app, repository) as T
     }
 }

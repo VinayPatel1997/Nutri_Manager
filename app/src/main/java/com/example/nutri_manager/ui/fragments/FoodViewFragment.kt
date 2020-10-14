@@ -16,19 +16,18 @@ import com.example.nutri_manager.models.Food
 import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.models.FoodNutrient
 import com.example.nutri_manager.ui.FoodActivity
-import com.example.nutri_manager.ui.FoodViewModel
+import com.example.nutri_manager.ui.ViewModel
 import com.example.nutri_manager.util.Constants
 import com.example.nutri_manager.util.Resource
 import com.google.common.collect.ImmutableList
 import com.google.firebase.Timestamp
 import kotlinx.android.synthetic.main.fragment_food_view.*
 import kotlinx.coroutines.*
-import okhttp3.internal.toImmutableList
 
 
 class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
 
-    lateinit var viewModel: FoodViewModel
+    lateinit var viewModel: ViewModel
     lateinit var nutrientAdapter: NutrientAdapter
 
     val args: FoodViewFragmentArgs by navArgs()
@@ -65,10 +64,10 @@ class FoodViewFragment : Fragment(R.layout.fragment_food_view) {
                                 async {
                                     for (index in 0 until defaultNutrientList.size) {
                                         val defValue = defaultNutrientList[index].value
-                                        Log.d("AAAAAAAA", "def before:$defValue")
+                                        Log.d("TESTING", "def before:$defValue")
                                         nutrientList[index].value = (defValue?.times(editable.toString().toInt()))?.div(100)
                                         val defAfter = defaultNutrientList[index].value
-                                        Log.d("AAAAAAAA", "def after:$defAfter")
+                                        Log.d("TESTING", "def after:$defAfter")
                                     }
                                 }.await()
                                 delay(2000)

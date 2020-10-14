@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Nutri_Manager</string>
+    <string name="app_name">Nutri Manager</string>
     <string name="add_food">Add food</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_login">Nutri Manager</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -22,8 +22,46 @@
     <string-array name="nutrient">
         <item>Energy</item>
         <item>Protein</item>
-        <item>Vitamin A</item>
-        <item>Iron</item>
-        <item>Sodium</item>
+        <item>Calcium, Ca</item>
+        <item>Total lipid (fat)</item>
+        <item>Carbohydrate, by difference</item>
+        <item>Glucose (dextrose)</item>
+        <item>Total fat (NLEA)</item>
+        <item>Vitamin A, IU</item>
+        <item>Vitamin A, RAE</item>
+        <item>Vitamin E (alpha-tocopherol)</item>
+        <item>Vitamin D (D2 + D3), International Units</item>
+        <item>Vitamin D2 (ergocalciferol)</item>
+        <item>Vitamin D3 (cholecalciferol)</item>
+        <item>Vitamin D (D2 + D3)</item>
+        <item>Vitamin E</item>
+        <item>Vitamin C, total ascorbic acid</item>
+        <item>Vitamin B-6</item>
+        <item>Vitamin B-12</item>
+        <item>Fatty acids, total trans</item>
+        <item>Fatty acids, total saturated</item>
+        <item>Fiber, total dietary</item>
+        <item>Fiber, soluble</item>
+        <item>Fiber, insoluble</item>
+        <item>Iron, Fe</item>
+        <item>Magnesium, Mg</item>
+        <item>Phosphorus, P</item>
+        <item>Potassium, K</item>
+        <item>Sodium, Na</item>
+        <item>Sulfur, S</item>
+        <item>Zinc, Zn</item>
+        <item>Chromium, Cr</item>
+        <item>Cobalt, Co</item>
+        <item>Copper, Cu</item>
+        <item>Fluoride, F</item>
+        <item>Iodine, I</item>
+        <item>Manganese, Mn</item>
+        <item>Molybdenum, Mo</item>
+        <item>Selenium, Se</item>
+        <item>Chlorine, Cl</item>
+        <item>Starch</item>
+        <item>Water</item>
+        <item>Cholesterol</item>
+
     </string-array>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.nutri_manager.api
+package com.example.nutri_manager.apis
 
 import com.example.nutri_manager.util.Constants.Companion.BASE_URL
 import com.example.nutri_manager.util.Constants.Companion.GOOGLE_MAP_BASE_URL

@@ -1,4 +1,4 @@
-package com.example.nutri_manager.models.models_progressbar
+package com.example.nutri_manager.models
 
 data class UploadResponse(
     val responseMessage: String? = null

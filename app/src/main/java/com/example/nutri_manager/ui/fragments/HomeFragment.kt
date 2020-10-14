@@ -17,9 +17,9 @@ import com.example.nutri_manager.models.FoodConsumption
 import com.example.nutri_manager.models.models_progressbar.AgeWeight
 import com.example.nutri_manager.models.models_progressbar.Avoid
 import com.example.nutri_manager.models.models_progressbar.Take
-import com.example.nutri_manager.other.SpinnerHelper
+import com.example.nutri_manager.util.SpinnerHelper
 import com.example.nutri_manager.ui.FoodActivity
-import com.example.nutri_manager.ui.FoodViewModel
+import com.example.nutri_manager.ui.ViewModel
 import com.example.nutri_manager.util.Resource
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.toObject
@@ -27,15 +27,12 @@ import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import kotlinx.android.synthetic.main.dialog_age_weight.*
 import kotlinx.android.synthetic.main.dialog_avoid_take_nutrient.*
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
 
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
-    lateinit var viewModel: FoodViewModel
+    lateinit var viewModel: ViewModel
     var querySnapshot: QuerySnapshot? = null
     var currentDate = Calendar.getInstance()
 
@@ -45,7 +42,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewModel = (activity as FoodActivity).viewModel
 
         viewModel.getFoodConsumption()
-        viewModel.foodConsumption.observe(viewLifecycleOwner, Observer { response ->
+        viewModel.foodConsumptionMutableLiveData.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
                     val querySnapshot = response.data
@@ -236,7 +233,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val dialogLayout =
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_avoid_take_nutrient, null)
         val dialogBox = AlertDialog.Builder(requireContext()).setView(dialogLayout).show()
-        dialogBox.message.text = "Enter maximum limit of nutrient"
+        dialogBox.message.text = "Enter Minimum limit of nutrient"
         dialogBox.spNutrientAvoidTake.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -359,7 +356,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             currentValue =
                                 sumNutritions(querySnapshot!!, currentDate, takeNutrient.id)
                             val nutrientName = SpinnerHelper.getNutrientName(takeNutrient.id)
-                            tv_minNutriMessage.setText("Max $nutrientName/Day")
+                            tv_minNutriMessage.setText("Min $nutrientName/Day")
                             tv_minNutriMessage.setTextColor(Color.GREEN)
                         }
                         setProgressBar(

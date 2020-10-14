@@ -3,48 +3,29 @@ package com.example.nutri_manager.ui.fragments
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.anychart.AnyChart
-import com.anychart.chart.common.dataentry.DataEntry
-import com.anychart.charts.Cartesian
-import com.anychart.data.Mapping
-import com.anychart.data.Set
-import com.anychart.enums.Anchor
-import com.anychart.enums.MarkerType
-import com.anychart.enums.TooltipPositionMode
-import com.anychart.graphics.vector.Stroke
 import com.example.nutri_manager.R
 import com.example.nutri_manager.models.FoodConsumption
-import com.example.nutri_manager.other.CustomDataEntry
-import com.example.nutri_manager.other.SpinnerHelper
+import com.example.nutri_manager.util.SpinnerHelper
 import com.example.nutri_manager.ui.FoodActivity
-import com.example.nutri_manager.ui.FoodViewModel
+import com.example.nutri_manager.ui.ViewModel
 import com.example.nutri_manager.util.Resource
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.toObject
-import kotlinx.android.synthetic.*
-import kotlinx.android.synthetic.main.fragment_search_food.*
 import kotlinx.android.synthetic.main.fragment_visualization.*
 import kotlinx.coroutines.*
 import lecho.lib.hellocharts.model.*
-import java.lang.StringBuilder
 import java.util.*
 import kotlin.collections.ArrayList
 
 class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
 
-    lateinit var viewModel: FoodViewModel
+    lateinit var viewModel: ViewModel
 
     var durationPosition: Int = -1
     var typePosition: Int = -1
@@ -77,7 +58,8 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
                     if (querySnapshot != null && typePosition != -1) {
                         val nutrientId = SpinnerHelper.getNutrintId(typePosition)
                         val unit = SpinnerHelper.getNutrientUnit(nutrientId)
-                        val lebel = "${adapterView?.getItemAtPosition(typePosition)}($unit)"
+                        val lebel = "${SpinnerHelper.getNutrientName(nutrientId)}($unit)"
+//                        val lebel = "${adapterView?.getItemAtPosition(typePosition)}($unit)"
                         initializingChartData(querySnapshot, nutrientId, lebel)
                     }
                 }
@@ -97,7 +79,7 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
                         typePosition = position
                         val nutrientId = SpinnerHelper.getNutrintId(typePosition)
                         val unit = SpinnerHelper.getNutrientUnit(nutrientId)
-                        val lebel = "${adapterView?.getItemAtPosition(typePosition)}($unit)"
+                        val lebel = "${SpinnerHelper.getNutrientName(nutrientId)}($unit)"
                         initializingChartData(querySnapshot, nutrientId, lebel )
                     }
                 }
@@ -105,7 +87,7 @@ class VisualizationFragment : Fragment(R.layout.fragment_visualization) {
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
 
-        viewModel.foodConsumption.observe(viewLifecycleOwner, Observer { response ->
+        viewModel.foodConsumptionMutableLiveData.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
                     val querySnapshot = response.data

@@ -1,4 +1,4 @@
-package com.example.nutri_manager.api
+package com.example.nutri_manager.apis
 
 import com.example.nutri_manager.models.FoodResponse
 import com.example.nutri_manager.util.Constants.Companion.API_KEY

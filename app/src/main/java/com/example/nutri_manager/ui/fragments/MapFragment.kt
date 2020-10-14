@@ -5,43 +5,27 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.example.nutri_manager.R
-import com.example.nutri_manager.other.MapUtility
+import com.example.nutri_manager.util.MapUtility
 import com.example.nutri_manager.ui.FoodActivity
-import com.example.nutri_manager.ui.FoodViewModel
-import com.example.nutri_manager.util.Constants
+import com.example.nutri_manager.ui.ViewModel
 import com.example.nutri_manager.util.Constants.Companion.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.nutri_manager.util.Resource
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.fragment_map.*
-import kotlinx.android.synthetic.main.fragment_search_food.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
-import kotlin.text.StringBuilder
 
 
 class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionCallbacks {
-    lateinit var foodViewModel: FoodViewModel
+    lateinit var viewModel: ViewModel
     private var map: GoogleMap? = null;
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -49,7 +33,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        foodViewModel = (activity as FoodActivity).viewModel
+        viewModel = (activity as FoodActivity).viewModel
         fusedLocationProviderClient = FusedLocationProviderClient(requireActivity());
         var currentLat: Double?
         var currentLng: Double?
@@ -72,8 +56,8 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
                     if (currentLng != null && currentLat != null) {
                         mapView.getMapAsync {
-                            foodViewModel.getNearbyPlaces(getUrl(currentLat, currentLng))
-                            foodViewModel.getNearbyPlaces.observe(
+                            viewModel.getNearbyPlaces(getUrl(currentLat, currentLng))
+                            viewModel.getNearbyPlacesMutableLiveData.observe(
                                 viewLifecycleOwner,
                                 { response ->
                                     when (response) {
