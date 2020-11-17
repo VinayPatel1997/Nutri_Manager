@@ -233,7 +233,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val dialogLayout =
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_avoid_take_nutrient, null)
         val dialogBox = AlertDialog.Builder(requireContext()).setView(dialogLayout).show()
-        dialogBox.message.text = "Enter Minimum limit of nutrient"
+        dialogBox.message.text = "Enter Minimum Required nutrient"
         dialogBox.spNutrientAvoidTake.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
